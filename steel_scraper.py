@@ -22,7 +22,8 @@ class SteelBrowserScraper:
             response = requests.post(
                 f"{self.steel_url}/v1/sessions",
                 headers={'Content-Type': 'application/json'},
-                json={}
+                json={},
+                timeout=180  # 3 minutes
             )
             response.raise_for_status()
             data = response.json()
@@ -42,7 +43,8 @@ class SteelBrowserScraper:
         try:
             response = requests.post(
                 f"{self.steel_url}/v1/sessions/{self.session_id}/release",
-                headers={'Content-Type': 'application/json'}
+                headers={'Content-Type': 'application/json'},
+                timeout=30  # 30 seconds for release
             )
             response.raise_for_status()
         except Exception as e:
@@ -105,7 +107,7 @@ class SteelBrowserScraper:
                     page = await context.new_page()
                 
                 # Navigate to search URL
-                await page.goto(search_url)
+                await page.goto(search_url, timeout=180000)  # 3 minutes
                 await page.wait_for_timeout(2000)
                 
                 # Handle cookie consent
@@ -126,12 +128,12 @@ class SteelBrowserScraper:
                 
                 # Wait for results
                 try:
-                    await page.wait_for_selector('#search', timeout=20000)
+                    await page.wait_for_selector('#search', timeout=180000)  # 3 minutes
                 except:
                     try:
-                        await page.wait_for_selector('#rso', timeout=10000)
+                        await page.wait_for_selector('#rso', timeout=180000)  # 3 minutes
                     except:
-                        await page.wait_for_load_state('networkidle', timeout=15000)
+                        await page.wait_for_load_state('networkidle', timeout=180000)  # 3 minutes
                 
                 # Extract search results
                 if search_type == 'news':
@@ -201,7 +203,7 @@ class SteelBrowserScraper:
     async def extract_page_content(self, page, url, position):
         """Extract main content from a page"""
         try:
-            await page.goto(url, wait_until='domcontentloaded', timeout=30000)
+            await page.goto(url, wait_until='domcontentloaded', timeout=180000)  # 3 minutes
             await page.wait_for_timeout(3000)
             
             content = {
