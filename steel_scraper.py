@@ -8,6 +8,11 @@ from playwright.async_api import async_playwright
 import requests
 import json
 from datetime import datetime
+import logging
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 class SteelBrowserScraper:
